@@ -5,32 +5,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/weather-icons/2.0.10/css/weather-icons-wind.css">
+    <link rel="stylesheet" href="css/main.css">
     <title>Show the Local Weather</title>
 </head>
 
 <body>
     <div class="container">
         <div class="row">
-            <div class="col-lg-12">
+            <div class="col-lg-12 text-center">
                 <h1>Show the Local Weather</h1>
                 <p id="location"></p>
-                <p id="weather"></p>
-                <p id="temperature"></p>
+                <span id="weather"></span>
+                <span id="temperature"></span><span id="metrics">F</span>
             </div>
         </div>
     </div>
+
+
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script>
+        var hours = new Date().getHours();
+        var dayIcon = {
+            "clear sky": "http://openweathermap.org/img/w/01d.png",
+            "few clouds": "http://openweathermap.org/img/w/02d.png",
+            "scattered clouds": "http://openweathermap.org/img/w/03d.png",
+            "broken clouds": "http://openweathermap.org/img/w/04d.png",
+            "shower rain": "http://openweathermap.org/img/w/09d.png",
+            "rain": "http://openweathermap.org/img/w/10d.png",
+            "thunderstorm": "http://openweathermap.org/img/w/11d.png",
+            "snow": "http://openweathermap.org/img/w/13d.png",
+            "mist": "http://openweathermap.org/img/w/50d.png"
+        };
+
+        var nightIcon = {
+            "clear sky": "http://openweathermap.org/img/w/01n.png",
+            "few clouds": "http://openweathermap.org/img/w/02n.png",
+            "scattered clouds": "http://openweathermap.org/img/w/03n.png",
+            "broken clouds": "http://openweathermap.org/img/w/04n.png",
+            "shower rain": "http://openweathermap.org/img/w/09n.png",
+            "rain": "http://openweathermap.org/img/w/10n.png",
+            "thunderstorm": "http://openweathermap.org/img/w/11n.png",
+            "snow": "http://openweathermap.org/img/w/13n.png",
+            "mist": "http://openweathermap.org/img/w/50n.png"
+        };
+
         window.navigator.geolocation.getCurrentPosition(function (position) {
             var latitude = position.coords.latitude;
             var longitude = position.coords.longitude;
             var url = 'http://api.openweathermap.org/data/2.5/weather?lat=' + latitude + '&lon=' + longitude + '&APPID=763c8d7b8031e30152e5ac034e6b3298';
-            var json = $.getJSON(url, (data) => {
+
+            var metrics = $('#metrics').text();
+
+            var json = $.getJSON(url, function (data) {
+
+                var temp = data.main.temp;
+
                 $('#location').text(data.name);
-                $('#weather').text(data.weather[0].description);
-                $('#temperature').text(data.main.temp);
+                $('#temperature').text(kToF(data.main.temp));
+
+                if (hours > 9 && hours < 21) {
+                    $('#weather').html('<img src="' + dayIcon[data.weather[0].description] + '">');
+                } else {
+                    $('#weather').html('<img src="' + nightIcon[data.weather[0].description] + '">');
+                }
+
+                function change(metrics) {
+                    if (metrics === 'F') {
+                        $('#temperature').text(kToC(data.main.temp));
+                        $('#metrics').text('C');
+                    } else if (metrics === 'C') {
+                        $('#temperature').text(kToF(data.main.temp));
+                        $('#metrics').text('F');
+                    }
+                }
+
+                $('#metrics').click(function (e) {
+                    var selected = $(this).text();
+
+                    change(selected);
+                });
             });
         });
+
+
+        function kToF(temp) {
+            return (temp * (9 / 5) - 459.67).toFixed(2);
+        }
+
+        function kToC(temp) {
+            return (temp - 273.15).toFixed(1);
+        };
     </script>
 </body>
 
