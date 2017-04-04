@@ -1,0 +1,12 @@
+body {
+    background-color: #000;
+    color: #fff;
+}
+
+#location {
+    font-size: 20pt;
+}
+
+#temperature, #metrics {
+    font-size: 16pt;
+}
