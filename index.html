@@ -1,12 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Show Local Weather</title>
+    <title>Show the Local Weather</title>
 </head>
+
 <body>
-    
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-12">
+                <h1>Show the Local Weather</h1>
+                <p id="location"></p>
+                <p id="weather"></p>
+                <p id="temperature"></p>
+            </div>
+        </div>
+    </div>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script>
+        window.navigator.geolocation.getCurrentPosition(function (position) {
+            var latitude = position.coords.latitude;
+            var longitude = position.coords.longitude;
+            var url = 'http://api.openweathermap.org/data/2.5/weather?lat=' + latitude + '&lon=' + longitude + '&APPID=763c8d7b8031e30152e5ac034e6b3298';
+            var json = $.getJSON(url, (data) => {
+                $('#location').text(data.name);
+                $('#weather').text(data.weather[0].description);
+                $('#temperature').text(data.main.temp);
+            });
+        });
+    </script>
 </body>
+
 </html>
